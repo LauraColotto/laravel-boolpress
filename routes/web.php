@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,10 +20,23 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::prefix('admin')->namespace('Admin')->middleware('auth')->group(function () {
+// Rotte per l'area admin
+
+Route::prefix('admin')->name("admin.")->namespace('Admin')->middleware('auth')->group(function () {
+
+    // qui ci vanno le rotte Admin
+
     Route::get('/', 'HomeController@index')->name('home');
+    Route::resource("posts", "ArticleController");
 });
 
-Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
+// --------
+
+// Rotte Posts per gli ospiti
+
+Route::get("posts", "GuestArticleController@index")->name("posts.index");
+Route::get("posts/{slug}", "GuestArticleController@show")->name("posts.show");
+
+// Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 
 
