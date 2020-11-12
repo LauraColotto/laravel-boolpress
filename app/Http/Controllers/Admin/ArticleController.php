@@ -31,7 +31,7 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        //
+        return view("admin.posts.create");
     }
 
     /**
@@ -42,7 +42,31 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+
+        $request->validate([
+            "title" => "required",
+            "slug" => "required|unique:articles",
+            "content" => "required",
+            "image" => "image",
+        ]);
+
+// Path per il salvataggio delle immagini
+
+        $path = Storage::disk("public")->put("images", $data["image"]);
+// -----------------------------------------
+
+        $newArticle = new Article;
+        $newArticle->user_id = Auth::id();
+        $newArticle->title = $data["title"];
+        $newArticle->slug = $data["slug"];
+        $newArticle->content = $data["content"];
+        $newArticle->image = $path;
+
+        $newArticle->save();
+
+        return redirect()->route("admin.posts.show", $newArticle->slug);
+
     }
 
     /**
